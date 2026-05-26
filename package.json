@@ -1,0 +1,26 @@
+{
+  "name": "bot-clovis",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "bot-discord"
+  ],
+  "license": "ISC",
+  "author": "Lucas Fernandes",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
