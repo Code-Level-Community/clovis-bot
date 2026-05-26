@@ -16,7 +16,7 @@ async function registrarComandos(clientId: string, token: string): Promise<void>
 }
 
 async function recarregarCanais(client: Client): Promise<void> {
-  const nomesAnimais = new Set(animaisNordeste.map(a => a.nome));
+  const nomesAnimais = new Set(animaisNordeste.map((a: { nome: string }) => a.nome));
 
   for (const guild of client.guilds.cache.values()) {
     for (const channel of guild.channels.cache.values()) {

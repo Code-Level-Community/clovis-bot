@@ -11,6 +11,7 @@ RUN npm ci
 
 # Copia o código fonte e arquivos necessários
 COPY src/ ./src/
+COPY animais.json ./
 
 # Executa o build (gera a pasta dist)
 RUN npm run build
