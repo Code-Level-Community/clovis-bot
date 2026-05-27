@@ -1,5 +1,6 @@
-import { ChannelType, Client, PermissionFlagsBits, VoiceState } from 'discord.js';
+import { ChannelType, Client, GuildMember, PermissionFlagsBits, VoiceState } from 'discord.js';
 import animaisNordeste from '../../animais.json';
+import { getRestricoes } from '../services/restricaoService';
 import canaisTemporarios from '../utils/canaisTemporarios';
 
 const CANAL_GATILHO = '➕ Criar canal de voz';
@@ -69,6 +70,25 @@ export const name = 'voiceStateUpdate';
 export async function execute(oldState: VoiceState, newState: VoiceState, client: Client): Promise<void> {
   if (newState.channel?.name === CANAL_GATILHO) {
     await criarCanalTemporario(newState, client);
+  }
+
+  const restricoes = getRestricoes();
+
+  if (newState.channel && restricoes.has(newState.channel.id)) {
+    const cargosPermitidos = restricoes.get(newState.channel.id)!;
+    const member = newState.member as GuildMember;
+
+    if (!member.user.bot && !cargosPermitidos.has('')) {
+      const temCargo = [...cargosPermitidos].some(id => member.roles.cache.has(id));
+      if (!temCargo) {
+        try {
+          await member.voice.disconnect();
+          console.log(`🚫 ${member.user.tag} removido por não ter o cargo necessário`);
+        } catch (err) {
+          console.error('Erro ao expulsar membro sem cargo:', err);
+        }
+      }
+    }
   }
 
   if (oldState.channel && canaisTemporarios.has(oldState.channel.id)) {

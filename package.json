@@ -10,7 +10,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^25.9.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.22.3",
     "typescript": "^6.0.3"
   }
 }

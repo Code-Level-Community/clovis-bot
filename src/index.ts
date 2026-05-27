@@ -1,6 +1,8 @@
 import { ChatInputCommandInteraction, Client, Collection, GatewayIntentBits } from 'discord.js';
 import 'dotenv/config';
+import * as liberar from './commands/liberar';
 import * as limite from './commands/limite';
+import * as restringir from './commands/restringir';
 import * as clientReady from './events/clientReady';
 import * as voiceStateUpdate from './events/voiceStateUpdate';
 
@@ -20,6 +22,8 @@ const client = new Client({
 
 const commands = new Collection<string, Command>();
 commands.set(limite.data.name, limite);
+commands.set(restringir.data.name, restringir);
+commands.set(liberar.data.name, liberar);
 
 client.once(clientReady.name, () => clientReady.execute(client));
 client.on(voiceStateUpdate.name, (oldState, newState) => voiceStateUpdate.execute(oldState, newState, client));

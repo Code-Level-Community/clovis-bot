@@ -1,13 +1,15 @@
 import { ChannelType, Client, REST, Routes } from 'discord.js';
 import animaisNordeste from '../../animais.json';
+import * as liberar from '../commands/liberar';
 import * as limite from '../commands/limite';
+import * as restringir from '../commands/restringir';
 import canaisTemporarios from '../utils/canaisTemporarios';
 
 async function registrarComandos(clientId: string, token: string): Promise<void> {
   const rest = new REST().setToken(token);
   try {
     await rest.put(Routes.applicationCommands(clientId), {
-      body: [limite.data.toJSON()],
+      body: [limite.data.toJSON(), restringir.data.toJSON(), liberar.data.toJSON()],
     });
     console.log('✅ Slash commands registrados!');
   } catch (err) {
