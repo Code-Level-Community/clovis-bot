@@ -4,6 +4,7 @@ import * as liberar from '../commands/liberar';
 import * as limite from '../commands/limite';
 import * as restringir from '../commands/restringir';
 import canaisTemporarios from '../utils/canaisTemporarios';
+import { logger } from '../utils/logger';
 
 async function registrarComandos(clientId: string, token: string): Promise<void> {
   const rest = new REST().setToken(token);
@@ -11,9 +12,9 @@ async function registrarComandos(clientId: string, token: string): Promise<void>
     await rest.put(Routes.applicationCommands(clientId), {
       body: [limite.data.toJSON(), restringir.data.toJSON(), liberar.data.toJSON()],
     });
-    console.log('✅ Slash commands registrados!');
+    logger.info('Slash commands registrados');
   } catch (err) {
-    console.error('Erro ao registrar slash commands:', err);
+    logger.error({ err }, 'Erro ao registrar slash commands');
   }
 }
 
@@ -30,16 +31,16 @@ async function recarregarCanais(client: Client): Promise<void> {
       if (membrosReais.size === 0) {
         try {
           await channel.delete();
-          console.log(`🗑️ Canal vazio deletado no startup: ${channel.name}`);
+          logger.info({ canal: channel.name }, 'Canal vazio deletado no startup');
         } catch (err) {
-          console.error('Erro ao deletar canal no startup:', err);
+          logger.error({ err, canal: channel.name }, 'Erro ao deletar canal no startup');
         }
       } else {
         const dono = channel.permissionOverwrites.cache.find(
           p => p.type === 1 && p.id !== client.user!.id
         );
         canaisTemporarios.set(channel.id, dono ? dono.id : null);
-        console.log(`🔄 Canal temporário recuperado: ${channel.name}`);
+        logger.info({ canal: channel.name }, 'Canal temporário recuperado no startup');
       }
     }
   }
@@ -49,7 +50,7 @@ export const name = 'clientReady';
 export const once = true;
 
 export async function execute(client: Client): Promise<void> {
-  console.log(`✅ Clóvis online como ${client.user!.tag}`);
+  logger.info({ tag: client.user!.tag }, 'Clóvis online');
   await registrarComandos(process.env.CLIENT_ID!, process.env.DISCORD_TOKEN!);
   await recarregarCanais(client);
 }

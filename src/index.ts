@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, Client, Collection, GatewayIntentBits } from 'discord.js';
 import 'dotenv/config';
+import { logger } from './utils/logger';
 import * as liberar from './commands/liberar';
 import * as limite from './commands/limite';
 import * as restringir from './commands/restringir';
@@ -35,7 +36,7 @@ client.on('interactionCreate', async (interaction) => {
   try {
     await command.execute(interaction);
   } catch (err) {
-    console.error(err);
+    logger.error({ err, comando: interaction.commandName }, 'Erro ao executar comando');
     await interaction.reply({ content: '❌ Erro ao executar o comando.', ephemeral: true });
   }
 });

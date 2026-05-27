@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import canaisTemporarios from '../utils/canaisTemporarios';
+import { logger } from '../utils/logger';
 
 export const data = new SlashCommandBuilder()
   .setName('limite')
@@ -43,7 +44,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       : `✅ Limite definido para **${quantidade} usuários**!`;
     await interaction.reply({ content: msg, ephemeral: true });
   } catch (err) {
-    console.error('Erro ao definir limite:', err);
+    logger.error({ err, canal: canalAtual.name, limite: quantidade }, 'Erro ao definir limite do canal');
     await interaction.reply({
       content: '❌ Erro ao definir o limite. Tente novamente.',
       ephemeral: true,

@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, GuildMember, Role, VoiceBasedChannel } from 'discord.js';
 import canaisTemporarios from '../utils/canaisTemporarios';
+import { logger } from '../utils/logger';
 
 // canalId -> Set de cargo IDs permitidos
 const restricoes = new Map<string, Set<string>>();
@@ -46,7 +47,7 @@ export async function restringirCanal(
       try {
         await membro.voice.disconnect();
       } catch (err) {
-        console.error(`Erro ao expulsar ${membro.user.tag}:`, err);
+        logger.error({ err, usuario: membro.user.tag }, 'Erro ao expulsar membro após timer de restrição');
       }
     }
 
@@ -55,7 +56,7 @@ export async function restringirCanal(
         await canal.send(`🔒 ${membrosParaExpulsar.size} membro(s) removido(s) por não terem os cargos necessários.`);
       }
     } catch (err) {
-      console.error('Canal já foi deletado, ignorando mensagem:', err);
+      logger.warn({ err, canal: canal.id }, 'Canal deletado antes de enviar mensagem de restrição');
     }
   }, 60_000);
 }

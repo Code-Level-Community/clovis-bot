@@ -2,6 +2,7 @@ import { ChannelType, Client, GuildMember, PermissionFlagsBits, VoiceState } fro
 import animaisNordeste from '../../animais.json';
 import { getRestricoes } from '../services/restricaoService';
 import canaisTemporarios from '../utils/canaisTemporarios';
+import { logger } from '../utils/logger';
 
 const CANAL_GATILHO = '➕ Criar canal de voz';
 
@@ -44,9 +45,9 @@ async function criarCanalTemporario(newState: VoiceState, client: Client): Promi
       `👋 Bem-vindo ao canal **${animal.nome}**!\n📖 Saiba mais sobre esse animal: ${animal.wiki}\n\n💡 Use **/limite** para definir o número máximo de usuários no canal.`
     );
 
-    console.log(`✅ Canal criado: ${animal.nome} para ${member.user.tag}`);
+    logger.info({ canal: animal.nome, usuario: member.user.tag }, 'Canal temporário criado');
   } catch (err) {
-    console.error('Erro ao criar canal temporário:', err);
+    logger.error({ err, usuario: member.user.tag }, 'Erro ao criar canal temporário');
   }
 }
 
@@ -58,9 +59,9 @@ async function deletarCanalSeVazio(oldState: VoiceState): Promise<void> {
     try {
       await canal.delete();
       canaisTemporarios.delete(canal.id);
-      console.log(`🗑️ Canal deletado: ${canal.name}`);
+      logger.info({ canal: canal.name }, 'Canal temporário deletado');
     } catch (err) {
-      console.error('Erro ao deletar canal:', err);
+      logger.error({ err, canal: canal.name }, 'Erro ao deletar canal temporário');
     }
   }
 }
@@ -83,9 +84,9 @@ export async function execute(oldState: VoiceState, newState: VoiceState, client
       if (!temCargo) {
         try {
           await member.voice.disconnect();
-          console.log(`🚫 ${member.user.tag} removido por não ter o cargo necessário`);
+          logger.warn({ usuario: member.user.tag, canal: newState.channel!.name }, 'Membro removido por não ter o cargo necessário');
         } catch (err) {
-          console.error('Erro ao expulsar membro sem cargo:', err);
+          logger.error({ err, usuario: member.user.tag }, 'Erro ao expulsar membro sem cargo');
         }
       }
     }

@@ -12,6 +12,8 @@ Quando um usuário entra no canal gatilho, o Clóvis cria automaticamente um can
 - Deleção automática do canal quando ficar vazio
 - Recuperação de canais temporários ao reiniciar o bot
 - Comando `/limite` para o dono do canal definir o número máximo de usuários
+- Comando `/restringir` para limitar o canal a cargos específicos (admin/mod)
+- Comando `/liberar` para remover restrições de cargos do canal (admin/mod)
 
 ## Pré-requisitos
 
@@ -41,10 +43,12 @@ Crie um arquivo `.env` na raiz do projeto:
 ```env
 DISCORD_TOKEN=seu_token_aqui
 CLIENT_ID=id_do_seu_aplicativo
+NODE_ENV=development
 ```
 
 - `DISCORD_TOKEN` → Token do bot, disponível em **Discord Developer Portal → Bot → Token**
 - `CLIENT_ID` → ID do aplicativo, disponível em **Discord Developer Portal → Informações gerais → ID do aplicativo**
+- `NODE_ENV` → Defina como `development` para logs coloridos e legíveis no terminal; em produção, os logs são emitidos em JSON
 
 ### 4. Configure o canal gatilho no servidor
 
@@ -63,15 +67,15 @@ npm run dev
 Se tudo estiver certo, você verá no terminal:
 
 ```
-✅ Slash commands registrados!
-✅ Clóvis online como Clóvis#5839
+[10:42:01.123] INFO (clovis): Clóvis online
+[10:42:01.145] INFO (clovis): Slash commands registrados
 ```
 
 ## Scripts disponíveis
 
 | Comando | Descrição |
 |---|---|
-| `npm run dev` | Roda o bot em modo desenvolvimento com `ts-node` |
+| `npm run dev` | Roda o bot em modo desenvolvimento com `tsx` (watch mode) |
 | `npm run build` | Compila o TypeScript para JavaScript na pasta `dist/` |
 | `npm start` | Roda o bot compilado (produção) |
 
@@ -81,17 +85,22 @@ Se tudo estiver certo, você verá no terminal:
 clovis-bot/
 ├── src/
 │   ├── commands/
-│   │   └── limite.ts        # Comando /limite
+│   │   ├── limite.ts           # Comando /limite
+│   │   ├── restringir.ts       # Comando /restringir
+│   │   └── liberar.ts          # Comando /liberar
 │   ├── events/
-│   │   ├── clientReady.ts   # Evento de inicialização
-│   │   └── voiceStateUpdate.ts # Lógica de canais de voz
+│   │   ├── clientReady.ts      # Inicialização e recuperação de canais
+│   │   └── voiceStateUpdate.ts # Ciclo de vida dos canais temporários
+│   ├── services/
+│   │   └── restricaoService.ts # Lógica de restrição por cargo
 │   ├── utils/
-│   │   └── canaisTemporarios.ts # Map de canais temporários
+│   │   ├── canaisTemporarios.ts # Map de canais ativos
+│   │   └── logger.ts           # Logger centralizado (pino)
 │   ├── types/
-│   │   └── index.ts         # Tipos TypeScript
-│   └── index.ts             # Entry point
-├── animais.json             # Lista de animais do Nordeste
-├── .env                     # Variáveis de ambiente (não commitar)
+│   │   └── index.ts            # Tipos TypeScript
+│   └── index.ts                # Entry point
+├── animais.json                # Lista de animais do Nordeste
+├── .env                        # Variáveis de ambiente (não commitar)
 ├── tsconfig.json
 └── package.json
 ```
