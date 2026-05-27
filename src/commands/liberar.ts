@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, GuildMember, SlashCommandBuilder } from 'discord.js';
 import { liberarCanal } from '../services/restricaoService';
 
-const CARGOS_PERMITIDOS = ['Fundador / Admin', 'Moderador'];
+const CARGOS_PERMITIDOS = ['👑 Fundador / Admin', '🛡️ Moderador'];
 
 export const data = new SlashCommandBuilder()
   .setName('liberar')
