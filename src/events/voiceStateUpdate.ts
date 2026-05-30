@@ -6,9 +6,15 @@ import { logger } from '../utils/logger';
 
 const CANAL_GATILHO = '➕ Criar canal de voz';
 
+const criandoCanal = new Set<string>();
+
 async function criarCanalTemporario(newState: VoiceState, client: Client): Promise<void> {
   const guild = newState.guild;
   const member = newState.member!;
+
+  if (criandoCanal.has(member.id)) return;
+  criandoCanal.add(member.id);
+
   const animal = animaisNordeste[Math.floor(Math.random() * animaisNordeste.length)];
 
   try {
@@ -40,6 +46,14 @@ async function criarCanalTemporario(newState: VoiceState, client: Client): Promi
     });
 
     canaisTemporarios.set(novoCanal.id, member.id);
+
+    if (!member.voice.channelId) {
+      await novoCanal.delete();
+      canaisTemporarios.delete(novoCanal.id);
+      logger.warn({ usuario: member.user.tag }, 'Usuário desconectou antes de ser movido, canal deletado');
+      return;
+    }
+
     await member.voice.setChannel(novoCanal);
     await novoCanal.send(
       `👋 Bem-vindo ao canal **${animal.nome}**!\n📖 Saiba mais sobre esse animal: ${animal.wiki}\n\n💡 Use **/limite** para definir o número máximo de usuários no canal.`
@@ -48,6 +62,8 @@ async function criarCanalTemporario(newState: VoiceState, client: Client): Promi
     logger.info({ canal: animal.nome, usuario: member.user.tag }, 'Canal temporário criado');
   } catch (err) {
     logger.error({ err, usuario: member.user.tag }, 'Erro ao criar canal temporário');
+  } finally {
+    criandoCanal.delete(member.id);
   }
 }
 
